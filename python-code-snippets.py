@@ -680,3 +680,165 @@ os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 #4.This is set the environment variable to add the path to the system
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+"""
+1. Merge two dictionaries in a single expression
+If you use Python3.9 and above, you can use | for this purpose.
+"""
+x = {'a': 1, 'b': 2}
+y = {'c': 3, 'd': 4}
+z = x | y
+
+# If you want to assign the result to the first dictionary, you can simply use |=
+
+# 2. Merge two lists
+x = ['a', 'b']
+y = ['c', 'd', 'e']
+x.extend(y)
+print(x)
+#or
+x += y
+
+"""
+5. Get the longest string from a list
+Suppose we have a list consisting of words:
+and we want to get the longest word in this list. All we need to do is that:
+"""
+words = ['Python', 'is', 'awesome']
+max(words, key=len)
+
+"""
+9. Read a file in a single line
+And now let’s try to read what we’ve just written to the file.
+Compared to other programming languages such as Java or C++ , reading a file in Python is pretty easy.
+"""
+data = [line.strip() for line in open("file.txt")]
+
+fib = lambda x: x if x <= 1 else fib(x - 1) + fib(x - 2)
+
+'I love Python'.count('o')
+
+# 14. Sort in a single line
+numbers = [5, -3, 428, -102, 4, 1]
+numbers.sort()
+print(numbers)
+
+# What if we want to sort it in the reverse order? Then pass reverse=True as an argument.
+numbers.sort(reverse=True)
+print(numbers)
+
+# 15. Create a dictionary from a list
+cars = ['Audi', 'BMW', 'Ford', 'Volkswagen', 'Volvo']
+cars_dict = dict(enumerate(cars))
+
+# 16. Create a dictionary with key-value pair
+dict(name='Jack', country= 'USA', age=25)
+
+# 22. Convert a list of strings to integers
+# We will use map() function here. Remember that map() takes two arguments: a function and an iterable. It applies the function to each item of the iterable.
+list(map(int, ['1', '2', '3']))
+
+print(*range(1, 6), sep='\n')
+
+
+from pathlib import Path
+filepath = Path('/Users/jlee/test_dir/test1.txt')
+
+Path.home()
+#PosixPath('/Users/jlee')
+Path.cwd()
+#PosixPath('/Users/jlee/test_dir')
+
+filepath.parent
+#PosixPath('/Users/jlee/test_dir')
+
+# This replaces the following more verbose os.path.dirname function:
+import os
+
+os.path.dirname(os.path.abspath('test1.txt'))
+#'/Users/jlee/test_dir'
+
+# Confirm the type of path with:
+filepath.is_dir()
+# False
+filepath.is_file()
+# True
+
+# 1. Get string representations of path objects and their components
+
+filepath.as_posix()
+# '/Users/jlee/test_dir/test1.txt'
+str(filepath)
+# '/Users/jlee/test_dir/test1.txt'
+filepath.name
+# 'test1.txt'
+filepath.stem
+# 'test1'
+filepath.suffix
+# '.txt'
+
+# 2. Create child paths using the slash operator
+# One of my favorite aspects of pathlib is that it provides a much more intuitive and cleaner way to build up paths. Simply insert the slash operator (/) between a Path object and a path string to create a new path object:
+filepath = Path.cwd() / "test1.txt"
+# PosixPath('/Users/jlee/test_dir/test1.txt')
+filepath2 = Path.cwd() / "test3.txt"
+# PosixPath('/Users/jlee/test_dir/test3.txt')
+filepath3 = Path.cwd() / "embedded_dir/test3.txt"
+# PosixPath('/Users/jlee/test_dir/embedded_dir/test3.txt')
+# Check whether these paths exist using .exists().
+filepath.exists()
+# True
+filepath2.exists()
+# False
+filepath3.exists()
+# True
+
+# 3. List all files in a directory matching a pattern
+dirpath = filepath.parent
+# >>> [f for f in dirpath.iterdir() if f.is_file()]
+# [PosixPath('/Users/jlee/test_dir/test1.txt'), PosixPath('/Users/jlee/test_dir/test2.txt')]
+# Use .glob(pattern) to find all files in a specified directory matching a pattern, e.g., all .txt files:
+dirpath = Path.cwd()
+files = dirpath.glob("*.txt")
+list(files)
+# [PosixPath('/Users/jlee/test_dir/test1.txt'), PosixPath('/Users/jlee/test_dir/test2.txt')]
+# Add "**/" to the beginning of the pattern to traverse the current directory and all subdirectories:
+all_files = dirpath.glob("**/*.txt")
+list(all_files)
+# [PosixPath('/Users/jlee/test_dir/test1.txt'), PosixPath('/Users/jlee/test_dir/test2.txt'), PosixPath('/Users/jlee/test_dir/embedded_dir/test3.txt')]
+# Alternatively, use .rglob (for “recursive glob”) if you don’t want to use "**/":
+list(dirpath.rglob("*.txt"))
+# [PosixPath('/Users/jlee/test_dir/test1.txt'), PosixPath('/Users/jlee/test_dir/test2.txt'), PosixPath('/Users/jlee/test_dir/embedded_dir/test3.txt')]
+# This replaces the much more lengthy: 😐
+import os
+paths = []
+for root, subdir, files in os.walk(dirpath):
+    for f in files:
+        if f.endswith(".txt"):
+            paths.append(str(os.path.join(root, f)))
+
+# 4. Get the full path of a file or directory
+# The .resolve() method will return a new path object with the absolute path while resolving any symlinks and eliminating any .. components.
+Path('embedded_dir').resolve()
+# PosixPath('/Users/jlee/test_dir/embedded_dir')
+# cf
+Path('embedded_dir')
+# PosixPath('embedded_dir')
+
+# 5. For use in a running script
+# If you’re working with a Python module, you will need to use the variable __file__ to get the path of the running script file. When the module is loaded, __file__ is set to the path of the .py file. Using __file__ with other functions allows you to refer to directories relative to this path.
+# The old way to accomplish this was:
+# inside, say, utils/__init__.py
+import os
+SOURCE_FILE = os.path.abspath(__file__)
+SOURCE_DIR = os.path.dirname(SOURCE_FILE)  # /Users/jlee/test_dir
+ROOT_DIR = os.path.abspath(os.path.join(SOURCE_DIR , ".."))  # /Users/jlee
+EMBEDDED_DIR = os.path.join(os.path.dirname(__file__), os.path.abspath("embedded_dir"))  # /Users/jlee/test_dir/embedded_dir
+
+# Using Path, you can express this in a much more concise way:
+from pathlib import Path
+SOURCE_FILE = Path(__file__).resolve()
+SOURCE_DIR = SOURCE_FILE.parent
+ROOT_DIR = SOURCE_DIR.parent
+EMBEDDED_DIR = SOURCE_DIR / "embedded_dir"
