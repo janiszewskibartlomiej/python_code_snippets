@@ -118,6 +118,7 @@ print(tuples)
 
 dictt2 = {}
 for key, value in tuples:
+  print(key, value)
   if key in dictt2:
     pass
   else:
@@ -181,6 +182,28 @@ twoDMatrix = [[10, 20, 30],
 trans = [[i[j] for i in twoDMatrix] for j in range(len(twoDMatrix))]
 
 print(trans)
+
+# Python program to find second largest
+# number in a list
+
+# list of numbers - length of
+# list should be at least 2
+list1 = [10, 20, 4, 45, 99]
+
+mx=max(list1[0],list1[1])
+secondmax=min(list1[0],list1[1])
+n =len(list1)
+for i in range(2,n):
+	if list1[i]>mx:
+		secondmax=mx
+		mx=list1[i]
+	elif list1[i]>secondmax and \
+		mx != list1[i]:
+		secondmax=list1[i]
+
+print("Second highest number is : ",\
+	str(secondmax))
+
 
 # Adding Elements of Two Lists
 
